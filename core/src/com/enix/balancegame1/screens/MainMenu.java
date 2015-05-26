@@ -1,5 +1,6 @@
 package com.enix.balancegame1.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 
 /**
  * Created by Eric on 5/26/2015.
@@ -37,7 +39,17 @@ public class MainMenu implements Screen {
     @Override
     public void show()
     {
+        atlas = new TextureAtlas("ui/button.pack");
+        skin = new Skin(atlas);
 
+        table = new Table(skin);
+        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        TextButtonStyle textButtonStyle = new TextButtonStyle();
+        textButtonStyle.up = skin.getDrawable("button.up");
+        textButtonStyle.down = skin.getDrawable("button.down");
+
+        white = new BitmapFont(Gdx.files.internal("font/white.fnt"), false);
     }
 
     @Override
