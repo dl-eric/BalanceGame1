@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.GL20;
 import com.enix.balancegame1.com.enix.balancegame1.tween.SpriteAccessor;
 
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenManager;
+
 /**
  * Created by Sabine on 5/26/2015.
  */
@@ -40,15 +43,15 @@ public class Splash implements Screen
     {
         batch = new SpriteBatch();
         tweenManager = new TweenManager();
-        Tween.registerAccessor(Sprite.class, new SpriteAccessor())
+        Tween.registerAccessor(Sprite.class, new SpriteAccessor());
 
         Texture splashTexture = new Texture(Gdx.files.internal("img/splashscreen.jpeg"));
         splash = new Sprite(splashTexture);
         splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        Tween.set(target, SpriteAccessor.ALPHA).target(0).start(tweenManager);
+        Tween.set(splash, SpriteAccessor.ALPHA).target(0).start(tweenManager);
         Tween.to(splash, SpriteAccessor.ALPHA, 2).target(1). start(tweenManager);
-        Tween.to(splash, SpriteAccessor.ALPHA, 2).target(0).delay(delay(2).start(tweenManager));
+        Tween.to(splash, SpriteAccessor.ALPHA, 2).target(0).delay(2).start(tweenManager);
     }
 
     @Override
