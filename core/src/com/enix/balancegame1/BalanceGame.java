@@ -26,7 +26,6 @@ public class BalanceGame extends com.badlogic.gdx.Game {
 	public void render()
 	{
 		super.render();
-
 	}
 
 	@Override
@@ -46,4 +45,5 @@ public class BalanceGame extends com.badlogic.gdx.Game {
 	{
 		super.resume();
 	}
+
 }
