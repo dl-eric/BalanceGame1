@@ -78,9 +78,11 @@ public class MainMenu implements Screen {
         //Heading
         LabelStyle headingStyle = new LabelStyle(white, Color.WHITE);
         heading = new Label("Balance", headingStyle);
+        heading.setFontScale(1);
 
         //Putting stuff together
         table.add(heading);
+        table.getCell(heading).spaceBottom(100);
         table.row();
         table.add(buttonExit);
         table.debug();          //TODO REMOVE LATER
