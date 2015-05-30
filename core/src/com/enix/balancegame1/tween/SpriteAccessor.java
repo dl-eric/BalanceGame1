@@ -1,4 +1,4 @@
-package com.enix.balancegame1.com.enix.balancegame1.tween;
+package com.enix.balancegame1.tween;
 
 import aurelienribon.tweenengine.TweenAccessor;
 import com.badlogic.gdx.graphics.g2d.Sprite;

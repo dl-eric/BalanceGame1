@@ -94,7 +94,7 @@ public class MainMenu implements Screen {
         //Heading
         LabelStyle headingStyle = new LabelStyle(white, Color.WHITE);
         Label heading = new Label("Balance", headingStyle);
-        heading.setFontScale(4);
+        heading.setFontScale(2);
 
         //Putting stuff together
         table.add(heading);
