@@ -38,7 +38,7 @@ public class Splash implements Screen
     @Override
     public void resize(int width, int height)
     {
-
+        splash.setSize(width, height);
     }
 
     @Override

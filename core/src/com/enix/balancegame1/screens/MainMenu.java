@@ -27,9 +27,7 @@ public class MainMenu implements Screen {
     private TextureAtlas atlas;
     private Skin skin;
     private Table table;
-    private TextButton buttonPlay, buttonExit;
     private BitmapFont white;
-    private Label heading;
 
     @Override
     public void render(float delta)
@@ -70,7 +68,7 @@ public class MainMenu implements Screen {
         textButtonStyle.fontColor = Color.BLACK;
 
         //Exit Button
-        buttonExit = new TextButton("Exit", textButtonStyle);
+        TextButton buttonExit = new TextButton("Exit", textButtonStyle);
         buttonExit.addListener(new ClickListener()
         {
             @Override
@@ -82,7 +80,7 @@ public class MainMenu implements Screen {
 
         //Play Button
 
-        buttonPlay = new TextButton("Play", textButtonStyle);
+        TextButton buttonPlay = new TextButton("Play", textButtonStyle);
         buttonPlay.addListener(new ClickListener()
         {
             @Override
@@ -95,7 +93,7 @@ public class MainMenu implements Screen {
 
         //Heading
         LabelStyle headingStyle = new LabelStyle(white, Color.WHITE);
-        heading = new Label("Balance", headingStyle);
+        Label heading = new Label("Balance", headingStyle);
         heading.setFontScale(4);
 
         //Putting stuff together

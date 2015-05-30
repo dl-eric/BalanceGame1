@@ -8,8 +8,6 @@ import com.enix.balancegame1.screens.MainMenu;
 import com.enix.balancegame1.screens.Splash;
 
 public class BalanceGame extends Game {
-	SpriteBatch batch;
-	Texture img;
 
 	@Override
 	public void create ()
@@ -26,7 +24,7 @@ public class BalanceGame extends Game {
 	@Override
 	public void render()
 	{
-	super.render();
+	    super.render();
 	}
 
 	@Override
