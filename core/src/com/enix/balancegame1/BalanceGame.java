@@ -25,7 +25,7 @@ public class BalanceGame extends com.badlogic.gdx.Game {
 	@Override
 	public void render()
 	{
-		super.render();
+	super.render();
 	}
 
 	@Override

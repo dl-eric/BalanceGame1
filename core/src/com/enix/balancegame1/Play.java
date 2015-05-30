@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 /**
  * Created by Eric on 5/26/2015.
  */
-public class Game implements Screen {
+public class Play implements Screen {
 
     private World world;
     private Box2DDebugRenderer debugRenderer;
