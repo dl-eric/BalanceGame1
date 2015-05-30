@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -21,7 +23,7 @@ public class Play implements Screen {
     @Override
     public void render(float delta)
     {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(255, 255, 255, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         debugRenderer.render(world, camera.combined);
@@ -40,6 +42,14 @@ public class Play implements Screen {
         debugRenderer = new Box2DDebugRenderer();
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        //Body Definition
+        BodyDef ballDef = new BodyDef();
+        ballDef.type = BodyType.DynamicBody;
+        ballDef.position.set(0, 1);
+
+        //Fixture Definition
+
     }
 
     @Override
@@ -65,6 +75,5 @@ public class Play implements Screen {
     {
         world.dispose();
         debugRenderer.dispose();
-
     }
 }
