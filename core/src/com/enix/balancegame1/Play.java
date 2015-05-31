@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -46,10 +47,12 @@ public class Play implements Screen {
     private BitmapFont white;
     private Label fuelLabel;
     private Label scoreLabel;
-    private int score = 0;
 
     private Body body;
     private Rocket rocket;
+    private float distance = 0;
+
+    private MeterGenerator meterGenerator;
 
     private Array<Body> temporaryBodies = new Array<Body>();
 
@@ -83,9 +86,12 @@ public class Play implements Screen {
             }
         stage.draw();
         fuelLabel.setText("Fuel: " + Integer.toString(rocket.getFuel()));
+        scoreLabel.setText("Distance: " + (int)(Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth(), 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)));
         batch.end();
 
         debugRenderer.render(world, camera.combined);
+
+        meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);
     }
 
     @Override
@@ -163,12 +169,14 @@ public class Play implements Screen {
         fuelLabel = new Label("Fuel: " + Integer.toString(rocket.getFuel()), headingStyle);
 
         //Score
-        scoreLabel = new Label("Distance: " + score, headingStyle);
+        scoreLabel = new Label("Distance: " + Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth(), 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y), headingStyle);
 
         table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20).expand();
         table.add(scoreLabel).top().right().padTop(5).padLeft(20).padRight(20).expand();
         table.debug();
         stage.addActor(table);
+
+        meterGenerator = new MeterGenerator(body, botLeft.x, botRight.x, 1, 1);
     }
 
     @Override
