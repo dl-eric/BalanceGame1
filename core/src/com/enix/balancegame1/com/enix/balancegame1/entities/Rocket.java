@@ -21,7 +21,7 @@ import com.badlogic.gdx.physics.box2d.World;
  * Created by Eric on 5/30/2015.
  */
 
-public class Ball extends InputAdapter implements ContactListener
+public class Rocket extends InputAdapter implements ContactListener
 {
     private Body body;
     private Fixture fixture;
@@ -31,7 +31,7 @@ public class Ball extends InputAdapter implements ContactListener
     private Sprite ballSprite;
     private boolean isOnGround;
 
-    public Ball(World world, float x, float y, float width)
+    public Rocket(World world, float x, float y, float width)
     {
         this.width = width;
         height = width;
@@ -47,7 +47,7 @@ public class Ball extends InputAdapter implements ContactListener
         //Fixture Definition
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 2.5f;
+        fixtureDef.density = 10f;
         fixtureDef.friction = 0.25f;
         fixtureDef.restitution = 0;
 
@@ -58,20 +58,8 @@ public class Ball extends InputAdapter implements ContactListener
         ballSprite.setSize(1, 1);
         body.setUserData(ballSprite);
 
-        //Sensor
-        PolygonShape shapeBox = new PolygonShape();
-        shapeBox.setAsBox(0.2f, 0.2f, new Vector2(0, -0.4f), 0);
-        fixtureDef.shape = shapeBox;
-        fixtureDef.density = 0;
-        fixtureDef.isSensor = true;
-        body.createFixture(fixtureDef).setUserData("foot");
-
     }
 
-    public boolean isBallOnGround()
-    {
-        return isOnGround;
-    }
 
     public void update()
     {
@@ -97,13 +85,6 @@ public class Ball extends InputAdapter implements ContactListener
     @Override
     public void beginContact(Contact contact)
     {
-        Fixture fa = contact.getFixtureA();
-        Fixture fb = contact.getFixtureB();
-
-        if(fa.getUserData() != null && fa.getUserData().equals("foot"));
-            isOnGround = true;
-        if(fb.getUserData() != null && fb.getUserData().equals("foot"));
-            isOnGround = true;
     }
 
     @Override
@@ -120,12 +101,5 @@ public class Ball extends InputAdapter implements ContactListener
     @Override
     public void endContact(Contact contact)
     {
-        Fixture fa = contact.getFixtureA();
-        Fixture fb = contact.getFixtureB();
-
-        if(fa.getUserData() != null && fa.getUserData().equals("foot"));
-        isOnGround = false;
-        if(fb.getUserData() != null && fb.getUserData().equals("foot"));
-        isOnGround = false;
     }
 }

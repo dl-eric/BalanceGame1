@@ -6,10 +6,8 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -20,9 +18,8 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Array;
-import com.enix.balancegame1.com.enix.balancegame1.entities.Ball;
+import com.enix.balancegame1.com.enix.balancegame1.entities.Rocket;
 
 
 /**
@@ -40,7 +37,7 @@ public class Play implements Screen {
     private final int POSITIONITERATION = 3;
 
     private Body body;
-    private Ball ball;
+    private Rocket rocket;
 
     private Array<Body> temporaryBodies = new Array<Body>();
 
@@ -51,11 +48,11 @@ public class Play implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
-        ball.update();
+        rocket.update();
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATION);
 
-        camera.position.x = ball.getBody().getPosition().x > camera.position.x ? ball.getBody().getPosition().x : camera.position.x;
-        camera.position.y = ball.getBody().getPosition().y + 2;
+        camera.position.x = rocket.getBody().getPosition().x > camera.position.x ? rocket.getBody().getPosition().x : camera.position.x;
+        camera.position.y = rocket.getBody().getPosition().y + 2;
         camera.update();
 
         batch.setProjectionMatrix(camera.combined);
@@ -91,22 +88,19 @@ public class Play implements Screen {
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth() / 80, Gdx.graphics.getHeight() / 80);
 
-        //Ball
-        ball = new Ball(world, 0, 8, 1f);
-        world.setContactListener(ball);
+        //Rocket
+        rocket = new Rocket(world, 0, 8, 1f);
+        world.setContactListener(rocket);
 
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter()
         {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button)
             {
-               if(ball.isBallOnGround())
-               {
-                   ball.getBody().applyLinearImpulse(0, 12, ball.getBody().getWorldCenter().x, ball.getBody().getWorldCenter().y, true);
-               }
+               rocket.getBody().applyLinearImpulse(0, 12, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y, true);
                return true;
             }
-        }, ball));
+        }, rocket));
 
 
 //      Button pauseButton = new Button(); TODO
