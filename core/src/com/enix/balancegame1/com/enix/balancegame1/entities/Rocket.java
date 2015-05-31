@@ -29,7 +29,8 @@ public class Rocket extends InputAdapter implements ContactListener
     private Vector2 velocity = new Vector2();
     private float movementForce = 500, jumpPower = 50;
     private Sprite ballSprite;
-    private boolean isOnGround;
+
+    private int fuel;
 
     public Rocket(World world, float x, float y, float width)
     {
