@@ -6,8 +6,10 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -18,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.enix.balancegame1.com.enix.balancegame1.entities.Ball;
 
@@ -36,16 +39,15 @@ public class Play implements Screen {
     private final int VELOCITYITERATIONS = 8;
     private final int POSITIONITERATION = 3;
 
+    private Body body;
     private Ball ball;
-
-    private boolean isOnGround;
 
     private Array<Body> temporaryBodies = new Array<Body>();
 
     @Override
     public void render(float delta)
     {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(255, 255, 255, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
@@ -119,7 +121,6 @@ public class Play implements Screen {
 
         //Ground Shape
         ChainShape groundShape = new ChainShape();
-        Vector3 upLeft = new Vector3(0, Gdx.graphics.getHeight(), 0), upRight = new Vector3(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0);
         Vector3 botLeft = new Vector3(0, 0, 0), botRight = new Vector3(Gdx.graphics.getWidth(), 0, 0);
 
         camera.unproject(botLeft);
@@ -132,7 +133,8 @@ public class Play implements Screen {
         fixtureDef.friction = 0.5f;
         fixtureDef.restitution = 0;
 
-        world.createBody(bodyDef).createFixture(fixtureDef);
+        body = world.createBody(bodyDef);
+        body.createFixture(fixtureDef);
 
         groundShape.dispose();
     }

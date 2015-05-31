@@ -4,9 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -16,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Scaling;
 import com.enix.balancegame1.Play;
 
 /**
@@ -92,13 +95,11 @@ public class MainMenu implements Screen {
 
 
         //Heading
-        LabelStyle headingStyle = new LabelStyle(white, Color.WHITE);
-        Label heading = new Label("Balance", headingStyle);
-        heading.setFontScale(2);
+        Image banner = new Image(new Texture("img/banner.png"));
 
         //Putting stuff together
-        table.add(heading);
-        table.getCell(heading).spaceBottom(100);
+        table.add(banner).width(900).height(500);
+        table.getCell(banner).spaceBottom(100);
         table.row();
         table.add(buttonPlay).width(600).height(300);
         table.row();
