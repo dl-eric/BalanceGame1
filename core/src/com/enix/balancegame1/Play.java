@@ -32,7 +32,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 import com.enix.balancegame1.com.enix.balancegame1.entities.Rocket;
 
@@ -58,14 +57,12 @@ public class Play implements Screen {
     private Body body;
     private Rocket rocket;
     private int score;
-    private int top = 0;
 
     private MeterGenerator meterGenerator;
 
     private Array<Body> temporaryBodies = new Array<Body>();
 
     private Stage stage;
-    private Stage stage2;
     private Table table;
     private Skin skin;
     private TextureAtlas atlas;
@@ -154,21 +151,7 @@ public class Play implements Screen {
         }, rocket));
 
         atlas = new TextureAtlas("ui/button.pack");
-        skin = new Skin(atlas);
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.up = skin.getDrawable("button.up");
-        textButtonStyle.down = skin.getDrawable("button.down");
-        textButtonStyle.font = white;
-        textButtonStyle.fontColor = Color.BLACK;
-        skin.add("default", textButtonStyle);
-        Button pauseButton = new Button(skin);
-        pauseButton.addListener(new ClickListener()
-        {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).pause();
-            }
-        });
+        skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), atlas);
 
 
         BodyDef bodyDef = new BodyDef();
@@ -204,17 +187,48 @@ public class Play implements Screen {
 
         fuelLabel = new Label("Fuel: " + Integer.toString(rocket.getFuel()), headingStyle);
 
+        //Independant Window
+        final Window pause = new Window("Pause", skin); // TODO
+        TextButton continueButton = new TextButton("Continue", skin);
+        continueButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                pause.setVisible(false);
+            }
+        });
+
+        pause.padTop(64);
+        pause.row();
+        pause.add(continueButton).width(600);
+        pause.row();
+        pause.add(new TextButton("Restart", skin)).width(600);
+        pause.setSize(stage.getWidth() / 2, stage.getHeight() / 4);
+        pause.setPosition(stage.getWidth() / 2 - pause.getWidth() / 2, stage.getHeight() / 2 - pause.getHeight() / 2);
+
+        Button pauseButton = new Button(skin);
+        pauseButton.pad(10);
+        pauseButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                pause.setVisible(true);
+                (Gdx.app.getApplicationListener()).pause();
+            }
+        });
+
         //Score
         scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth(), 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), headingStyle);
 
-        table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20).expand();
-        table.add(scoreLabel).top().right().padTop(5).padLeft(20).padRight(20).expand();
+        table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20);
+        table.add(pauseButton).top().right().padTop(5).padLeft(20).padRight(20);
+        table.row();
+        table.add(scoreLabel).top().left().padTop(5).padLeft(20).expand();
         table.debug();
 
-        //Independant Window
-        Window pause = new Window("Pause", skin); // TODO
-
         stage.addActor(table);
+        stage.addActor(pause);
+        pause.setVisible(false);
 
         meterGenerator = new MeterGenerator(body, botLeft.x, botRight.x, 1, 1);
     }

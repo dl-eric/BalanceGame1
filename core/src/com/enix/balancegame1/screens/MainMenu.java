@@ -13,13 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.enix.balancegame1.Play;
@@ -57,30 +52,16 @@ public class MainMenu implements Screen {
     public void show()
     {
         stage = new Stage();
-
         atlas = new TextureAtlas("ui/button.pack");
-        white = new BitmapFont(Gdx.files.internal("font/white.fnt"), false);
-        WindowStyle ws = new WindowStyle();
-        ws.titleFont = white;
-        LabelStyle ls = new LabelStyle();
-        ls.font = white;
-        skin = new Skin(atlas);
-        skin.add("default", ws);
-        skin.add("default", ls);
+        skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), atlas);
 
         table = new Table(skin);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        //Buttons
-        TextButtonStyle textButtonStyle = new TextButtonStyle();
-        textButtonStyle.up = skin.getDrawable("button.up");
-        textButtonStyle.down = skin.getDrawable("button.down");
-        textButtonStyle.font = white;
-        textButtonStyle.fontColor = Color.BLACK;
-        skin.add("default", textButtonStyle);
+        //Buttons----------------------------------------------------------------------------------
 
         //Exit Button
-        TextButton buttonExit = new TextButton("Exit", textButtonStyle);
+        TextButton buttonExit = new TextButton("Exit", skin);
         buttonExit.addListener(new ClickListener()
         {
             @Override
@@ -93,7 +74,7 @@ public class MainMenu implements Screen {
         buttonExit.pad(20);
 
         //Play Button
-        TextButton buttonPlay = new TextButton("Play", textButtonStyle);
+        TextButton buttonPlay = new TextButton("Play", skin);
         buttonPlay.addListener(new ClickListener()
         {
             @Override
@@ -102,7 +83,6 @@ public class MainMenu implements Screen {
             }
         });
         buttonPlay.pad(20);
-
 
         //Heading
         Image banner = new Image(new Texture("img/banner.png"));
@@ -132,7 +112,6 @@ public class MainMenu implements Screen {
         stage.dispose();
         atlas.dispose();
         skin.dispose();
-        white.dispose();
     }
 
     @Override
