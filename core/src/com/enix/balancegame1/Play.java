@@ -1,5 +1,6 @@
 package com.enix.balancegame1;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -22,10 +23,16 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 import com.enix.balancegame1.com.enix.balancegame1.entities.Rocket;
 
@@ -50,14 +57,18 @@ public class Play implements Screen {
 
     private Body body;
     private Rocket rocket;
-    private float distance = 0;
+    private int score;
+    private int top = 0;
 
     private MeterGenerator meterGenerator;
 
     private Array<Body> temporaryBodies = new Array<Body>();
 
     private Stage stage;
+    private Stage stage2;
     private Table table;
+    private Skin skin;
+    private TextureAtlas atlas;
 
     @Override
     public void render(float delta)
@@ -65,12 +76,11 @@ public class Play implements Screen {
         Gdx.gl.glClearColor(255, 255, 255, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
         rocket.update();
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATION);
 
         camera.position.x = rocket.getBody().getPosition().x > camera.position.x ? rocket.getBody().getPosition().x : camera.position.x;
-        camera.position.y = rocket.getBody().getPosition().y + 2;
+        camera.position.y = rocket.getBody().getPosition().y + 7;
         camera.update();
 
         batch.setProjectionMatrix(camera.combined);
@@ -86,12 +96,23 @@ public class Play implements Screen {
             }
         stage.draw();
         fuelLabel.setText("Fuel: " + Integer.toString(rocket.getFuel()));
-        scoreLabel.setText("Distance: " + (int)(Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth(), 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)));
+        scoreLabel.setText("Distance: " + calculateScore((int) (Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth(), 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y))));
         batch.end();
 
         debugRenderer.render(world, camera.combined);
 
         meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);
+    }
+
+    public int calculateScore(int distance)
+    {
+        if(distance > score)
+        {
+            score = distance;
+            return score;
+        }
+        else
+            return score;
     }
 
     @Override
@@ -132,8 +153,23 @@ public class Play implements Screen {
             }
         }, rocket));
 
+        atlas = new TextureAtlas("ui/button.pack");
+        skin = new Skin(atlas);
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.up = skin.getDrawable("button.up");
+        textButtonStyle.down = skin.getDrawable("button.down");
+        textButtonStyle.font = white;
+        textButtonStyle.fontColor = Color.BLACK;
+        skin.add("default", textButtonStyle);
+        Button pauseButton = new Button(skin);
+        pauseButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ((Game)Gdx.app.getApplicationListener()).pause();
+            }
+        });
 
-//      Button pauseButton = new Button(); TODO
 
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef();
@@ -169,11 +205,15 @@ public class Play implements Screen {
         fuelLabel = new Label("Fuel: " + Integer.toString(rocket.getFuel()), headingStyle);
 
         //Score
-        scoreLabel = new Label("Distance: " + Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth(), 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y), headingStyle);
+        scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth(), 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), headingStyle);
 
         table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20).expand();
         table.add(scoreLabel).top().right().padTop(5).padLeft(20).padRight(20).expand();
         table.debug();
+
+        //Independant Window
+        Window pause = new Window("Pause", skin);
+
         stage.addActor(table);
 
         meterGenerator = new MeterGenerator(body, botLeft.x, botRight.x, 1, 1);

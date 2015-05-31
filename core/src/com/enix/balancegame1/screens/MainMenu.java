@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -17,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.enix.balancegame1.Play;
@@ -56,12 +59,17 @@ public class MainMenu implements Screen {
         stage = new Stage();
 
         atlas = new TextureAtlas("ui/button.pack");
+        white = new BitmapFont(Gdx.files.internal("font/white.fnt"), false);
+        WindowStyle ws = new WindowStyle();
+        ws.titleFont = white;
+        LabelStyle ls = new LabelStyle();
+        ls.font = white;
         skin = new Skin(atlas);
+        skin.add("default", ws);
+        skin.add("default", ls);
 
         table = new Table(skin);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        white = new BitmapFont(Gdx.files.internal("font/white.fnt"), false);
 
         //Buttons
         TextButtonStyle textButtonStyle = new TextButtonStyle();
@@ -69,6 +77,7 @@ public class MainMenu implements Screen {
         textButtonStyle.down = skin.getDrawable("button.down");
         textButtonStyle.font = white;
         textButtonStyle.fontColor = Color.BLACK;
+        skin.add("default", textButtonStyle);
 
         //Exit Button
         TextButton buttonExit = new TextButton("Exit", textButtonStyle);
@@ -76,13 +85,14 @@ public class MainMenu implements Screen {
         {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit();
+                ExitDialog exitDialog = new ExitDialog("Confirm Exit", skin);
+
+                exitDialog.show(stage);
             }
         });
         buttonExit.pad(20);
 
         //Play Button
-
         TextButton buttonPlay = new TextButton("Play", textButtonStyle);
         buttonPlay.addListener(new ClickListener()
         {
