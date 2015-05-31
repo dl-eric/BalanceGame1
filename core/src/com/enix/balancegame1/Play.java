@@ -1,6 +1,7 @@
 package com.enix.balancegame1;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -35,9 +36,9 @@ public class Play implements Screen {
     private final int VELOCITYITERATIONS = 8;
     private final int POSITIONITERATION = 3;
 
-    private float jumpSpeed = 100;
-    private Vector2 movement = new Vector2();
     private Ball ball;
+
+    private boolean isOnGround;
 
     private Array<Body> temporaryBodies = new Array<Body>();
 
@@ -47,16 +48,12 @@ public class Play implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATION);
-
-        debugRenderer.render(world, camera.combined);
-
-        //ball.getBody().applyForceToCenter(movement, true);
 
         ball.update();
+        world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATION);
 
         camera.position.x = ball.getBody().getPosition().x > camera.position.x ? ball.getBody().getPosition().x : camera.position.x;
-        camera.position.y = ball.getBody().getPosition().y - 2;
+        camera.position.y = ball.getBody().getPosition().y + 2;
         camera.update();
 
         batch.setProjectionMatrix(camera.combined);
@@ -71,6 +68,8 @@ public class Play implements Screen {
                 sprite.draw(batch);
             }
         batch.end();
+
+        debugRenderer.render(world, camera.combined);
     }
 
     @Override
@@ -90,27 +89,28 @@ public class Play implements Screen {
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth() / 80, Gdx.graphics.getHeight() / 80);
 
-//        Gdx.input.setInputProcessor(new InputMultiplexer(new InputController()
-//        {
-//            @Override
-//            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//                movement.y = jumpSpeed;
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-//                movement.y = 0;
-//                return true;
-//            }
-//        }, ball));
-
-//      Button pauseButton = new Button();
-
         //Ball
-        ball = new Ball(world, 0, 10, 1f);
+        ball = new Ball(world, 0, 8, 1f);
+        world.setContactListener(ball);
+
+        Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter()
+        {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button)
+            {
+               if(ball.isBallOnGround())
+               {
+                   ball.getBody().applyLinearImpulse(0, 12, ball.getBody().getWorldCenter().x, ball.getBody().getWorldCenter().y, true);
+               }
+               return true;
+            }
+        }, ball));
+
+
+//      Button pauseButton = new Button(); TODO
 
         BodyDef bodyDef = new BodyDef();
+        FixtureDef fixtureDef = new FixtureDef();
 
         //Ground
         //Body Definition
@@ -128,7 +128,6 @@ public class Play implements Screen {
         groundShape.createChain(new float[] {botLeft.x, botLeft.y, botRight.x, botRight.y});
 
         //Fixture Definition
-        FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = groundShape;
         fixtureDef.friction = 0.5f;
         fixtureDef.restitution = 0;

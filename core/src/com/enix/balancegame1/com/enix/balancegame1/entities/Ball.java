@@ -8,13 +8,14 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactFilter;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+
 
 /**
  * Created by Eric on 5/30/2015.
@@ -26,7 +27,7 @@ public class Ball extends InputAdapter implements ContactListener
     private Fixture fixture;
     private final float width, height;
     private Vector2 velocity = new Vector2();
-    private float movementForce = 100;
+    private float movementForce = 500, jumpPower = 50;
     private Sprite ballSprite;
     private boolean isOnGround;
 
@@ -51,13 +52,25 @@ public class Ball extends InputAdapter implements ContactListener
         fixtureDef.restitution = 0;
 
         body = world.createBody(bodyDef);
-        body.createFixture(fixtureDef);
+        fixture = body.createFixture(fixtureDef);
 
         ballSprite = new Sprite(new Texture("img/ball.png"));
         ballSprite.setSize(1, 1);
         body.setUserData(ballSprite);
 
-        shape.dispose();
+        //Sensor
+        PolygonShape shapeBox = new PolygonShape();
+        shapeBox.setAsBox(0.2f, 0.2f, new Vector2(0, -0.4f), 0);
+        fixtureDef.shape = shapeBox;
+        fixtureDef.density = 0;
+        fixtureDef.isSensor = true;
+        body.createFixture(fixtureDef).setUserData("foot");
+
+    }
+
+    public boolean isBallOnGround()
+    {
+        return isOnGround;
     }
 
     public void update()
@@ -66,13 +79,8 @@ public class Ball extends InputAdapter implements ContactListener
     }
 
     @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return super.touchUp(screenX, screenY, pointer, button);
-    }
-
-    @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        body.applyLinearImpulse(0, 65, body.getWorldCenter().x, body.getWorldCenter().y, true);
+        body.applyLinearImpulse(0, jumpPower, body.getWorldCenter().x, body.getWorldCenter().y, true);
         return true;
     }
 
@@ -89,7 +97,13 @@ public class Ball extends InputAdapter implements ContactListener
     @Override
     public void beginContact(Contact contact)
     {
-        isOnGround = true;
+        Fixture fa = contact.getFixtureA();
+        Fixture fb = contact.getFixtureB();
+
+        if(fa.getUserData() != null && fa.getUserData().equals("foot"));
+            isOnGround = true;
+        if(fb.getUserData() != null && fb.getUserData().equals("foot"));
+            isOnGround = true;
     }
 
     @Override
@@ -106,6 +120,12 @@ public class Ball extends InputAdapter implements ContactListener
     @Override
     public void endContact(Contact contact)
     {
+        Fixture fa = contact.getFixtureA();
+        Fixture fb = contact.getFixtureB();
+
+        if(fa.getUserData() != null && fa.getUserData().equals("foot"));
+        isOnGround = false;
+        if(fb.getUserData() != null && fb.getUserData().equals("foot"));
         isOnGround = false;
     }
 }
