@@ -27,7 +27,7 @@ public class Rocket extends InputAdapter implements ContactListener
     private Fixture fixture;
     private final float width, height;
     private Vector2 velocity = new Vector2();
-    private float movementForce = 500, jumpPower = 50;
+    private float jumpPower = 50;
     private Sprite ballSprite;
 
     private int fuel;
@@ -48,7 +48,7 @@ public class Rocket extends InputAdapter implements ContactListener
         //Fixture Definition
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 10f;
+        fixtureDef.density = 10f + fuel / 10;
         fixtureDef.friction = 0.25f;
         fixtureDef.restitution = 0;
 
@@ -59,8 +59,9 @@ public class Rocket extends InputAdapter implements ContactListener
         ballSprite.setSize(1, 1);
         body.setUserData(ballSprite);
 
-    }
+        fuel = 100;
 
+    }
 
     public void update()
     {
@@ -78,10 +79,9 @@ public class Rocket extends InputAdapter implements ContactListener
         return body;
     }
 
-    public Fixture getFixture()
-    {
-        return fixture;
-    }
+    public int getFuel() { return fuel; }
+
+    public void setFuel(int x) { fuel = x; }
 
     @Override
     public void beginContact(Contact contact)
