@@ -63,6 +63,7 @@ public class Play implements Screen {
     private Array<Body> temporaryBodies = new Array<Body>();
 
     private Stage stage;
+
     private Table table;
     private Skin skin;
     private TextureAtlas atlas;
@@ -127,6 +128,7 @@ public class Play implements Screen {
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
         stage = new Stage();
+
         table = new Table(new Skin(new TextureAtlas("ui/button.pack")));
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -213,7 +215,8 @@ public class Play implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 pause.setVisible(true);
-                (Gdx.app.getApplicationListener()).pause();
+                Gdx.app.exit();
+                //(Gdx.app.getApplicationListener()).pause();
             }
         });
 
@@ -221,7 +224,7 @@ public class Play implements Screen {
         scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth(), 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), headingStyle);
 
         table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20);
-        table.add(pauseButton).top().right().padTop(5).padLeft(20).padRight(20);
+        table.add(pauseButton).top().right().padTop(5).padLeft(20).padRight(20).width(100).height(100);
         table.row();
         table.add(scoreLabel).top().left().padTop(5).padLeft(20).expand();
         table.debug();

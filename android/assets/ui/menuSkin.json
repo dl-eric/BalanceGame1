@@ -24,6 +24,6 @@
     },
 
     "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
-        "default": { }
+        "default": { "up": "button.up", "down": "button.down"}
     }
 }
