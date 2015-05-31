@@ -212,7 +212,7 @@ public class Play implements Screen {
         table.debug();
 
         //Independant Window
-        Window pause = new Window("Pause", skin);
+        Window pause = new Window("Pause", skin); // TODO
 
         stage.addActor(table);
 

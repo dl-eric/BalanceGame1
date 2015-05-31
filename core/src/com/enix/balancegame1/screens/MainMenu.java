@@ -85,7 +85,7 @@ public class MainMenu implements Screen {
         {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ExitDialog exitDialog = new ExitDialog("Confirm Exit", skin);
+                ExitDialog exitDialog = new ExitDialog("Confirm Exit", skin); // TODO
 
                 exitDialog.show(stage);
             }
