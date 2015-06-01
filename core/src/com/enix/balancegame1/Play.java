@@ -159,7 +159,7 @@ public class Play implements Screen {
             {
                 if(rocket.getFuel() > 0)
                 {
-                    rocket.getBody().applyLinearImpulse(0, 550, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y, true);
+                    rocket.getBody().applyLinearImpulse(0, 600, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y, true);
                     rocket.setFuel(rocket.getFuel() - 1);
                 }
                return true;
