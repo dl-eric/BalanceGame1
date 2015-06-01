@@ -12,7 +12,7 @@ public class BalanceGame extends Game {
 	@Override
 	public void create ()
 	{
-		setScreen(new MainMenu());
+		setScreen(new Splash());
 	}
 
 	@Override
