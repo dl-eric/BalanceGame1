@@ -40,7 +40,7 @@ public class CloudGenerator
         cloudSprite.setSize(2, 1);
 
         environment.createFixture(cloudShape, 0);
-        environment.setUserData(cloudSprite);
+        //environment.setUserData(cloudSprite);
 
         cloudShape.dispose();
     }

@@ -1,5 +1,6 @@
 package com.enix.balancegame1;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -38,6 +39,9 @@ import com.enix.balancegame1.com.enix.balancegame1.entities.Rocket;
  * Created by Eric on 5/26/2015.
  *
  * TODO: Clouds, Pause Window, High Score, Textures
+ *
+ * TODO: Tower texture, make it so that the player never clears the generated tower.
+ *
  */
 public class Play implements Screen {
 
@@ -63,6 +67,7 @@ public class Play implements Screen {
 
     private Stage stage;
     private Body body;
+    private Stage stage2;
 
     private Table table;
     private Skin skin;
@@ -95,15 +100,18 @@ public class Play implements Screen {
                 sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
                 sprite.draw(batch);
             }
-        //stage.draw();
         fuelLabel.setText("Fuel: " + Integer.toString(rocket.getFuel()));
         scoreLabel.setText("Distance: " + calculateScore((int) (Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth() / 32, 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y))));
+
+        if(rocket.getFuel() == 0 && rocket.getBody().getLinearVelocity().y == 0)
+            stage2.draw();
+
         batch.end();
 
         debugRenderer.render(world, camera.combined);
 
         meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);
-        //cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);
+        cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);
     }
 
     public int calculateScore(int distance)
@@ -132,6 +140,7 @@ public class Play implements Screen {
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
         stage = new Stage();
+        stage2 = new Stage();
 
         table = new Table(new Skin(new TextureAtlas("ui/button.pack")));
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -214,23 +223,20 @@ public class Play implements Screen {
         fuelLabel = new Label("Fuel: " + Integer.toString(rocket.getFuel()), skin);
 
         //Independent Window
-        final Window pause = new Window("Pause", skin); // TODO
-        TextButton continueButton = new TextButton("Continue", skin);
-        continueButton.addListener(new ClickListener()
-        {
+        final Window gameOver = new Window("Game Over!", skin); // TODO
+        TextButton continueButton = new TextButton("Restart", skin);
+        continueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                pause.setVisible(false);
+                ((Game) Gdx.app.getApplicationListener()).setScreen(new Play());
             }
         });
 
-        pause.padTop(64);
-        pause.row();
-        pause.add(continueButton).width(600);
-        pause.row();
-        pause.add(new TextButton("Restart", skin)).width(600);
-        pause.setSize(stage.getWidth() / 2, stage.getHeight() / 4);
-        pause.setPosition(stage.getWidth() / 2 - pause.getWidth() / 2, stage.getHeight() / 2 - pause.getHeight() / 2);
+        gameOver.padTop(64);
+        gameOver.row();
+        gameOver.add(continueButton).width(600);
+        gameOver.setSize(stage.getWidth() / 2, stage.getHeight() / 4);
+        gameOver.setPosition(stage.getWidth() / 2 - gameOver.getWidth() / 2, stage.getHeight() / 2 - gameOver.getHeight() / 2);
 
         Button pauseButton = new Button(skin);
         pauseButton.pad(10);
@@ -238,7 +244,7 @@ public class Play implements Screen {
         {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                pause.setVisible(true);
+                gameOver.setVisible(true);
                 Gdx.app.exit();
                 //(Gdx.app.getApplicationListener()).pause();
             }
@@ -254,8 +260,8 @@ public class Play implements Screen {
         table.debug();
 
         stage.addActor(table);
-        stage.addActor(pause);
-        pause.setVisible(false);
+        stage2.addActor(gameOver);
+        gameOver.setVisible(true);
 
         meterGenerator = new MeterGenerator(body, 0, Gdx.graphics.getWidth() / 32, 1, 1);
         cloudGenerator = new CloudGenerator(body, -Gdx.graphics.getWidth() / 32, Gdx.graphics.getWidth() / 32, 4, 8);
@@ -285,5 +291,7 @@ public class Play implements Screen {
         world.dispose();
         debugRenderer.dispose();
         batch.dispose();
+        stage.dispose();
+        stage2.dispose();
     }
 }
