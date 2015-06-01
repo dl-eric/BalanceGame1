@@ -1,13 +1,10 @@
 package com.enix.balancegame1;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.enix.balancegame1.screens.MainMenu;
 import com.enix.balancegame1.screens.Splash;
 
-public class BalanceGame extends Game {
+public class BalanceGame extends com.badlogic.gdx.Game {
 
 	@Override
 	public void create ()
