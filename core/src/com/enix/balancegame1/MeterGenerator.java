@@ -19,7 +19,6 @@ public class MeterGenerator
     private Body environment;
     private float leftEdge;
     private float rightEdge;
-    private float width = rightEdge;
     private float height;
     private float y;
 
