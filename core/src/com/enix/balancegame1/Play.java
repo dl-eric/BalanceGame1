@@ -71,16 +71,17 @@ public class Play implements Screen {
     @Override
     public void render(float delta)
     {
-        Gdx.gl.glClearColor(255, 255, 255, 1);
+        Gdx.gl.glClearColor(156/255f, 198/255f, 253/255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         rocket.update();
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATION);
 
         camera.position.x = rocket.getBody().getPosition().x > camera.position.x ? rocket.getBody().getPosition().x : camera.position.x;
-        camera.position.y = rocket.getBody().getPosition().y + 7;
+        camera.position.y = rocket.getBody().getPosition().y + 4;
         camera.update();
 
+        stage.draw();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         world.getBodies(temporaryBodies);
@@ -92,7 +93,7 @@ public class Play implements Screen {
                 sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
                 sprite.draw(batch);
             }
-        stage.draw();
+        //stage.draw();
         fuelLabel.setText("Fuel: " + Integer.toString(rocket.getFuel()));
         scoreLabel.setText("Distance: " + calculateScore((int) (Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth(), 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y))));
         batch.end();
@@ -135,7 +136,8 @@ public class Play implements Screen {
         camera = new OrthographicCamera(Gdx.graphics.getWidth() / 80, Gdx.graphics.getHeight() / 80);
 
         //Rocket
-        rocket = new Rocket(world, 0, 8, 1f);
+        rocket = new Rocket(world, 0, 8, 8f);
+
         world.setContactListener(rocket);
 
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter()
@@ -145,7 +147,7 @@ public class Play implements Screen {
             {
                 if(rocket.getFuel() > 0)
                 {
-                    rocket.getBody().applyLinearImpulse(0, 12, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y, true);
+                    rocket.getBody().applyLinearImpulse(0, 300, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y, true);
                     rocket.setFuel(rocket.getFuel() - 1);
                 }
                return true;
@@ -184,12 +186,9 @@ public class Play implements Screen {
         groundShape.dispose();
 
         //Fuel Indicator
-        white = new BitmapFont(Gdx.files.internal("font/white.fnt"), false);
-        Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.BLACK);
+        fuelLabel = new Label("Fuel: " + Integer.toString(rocket.getFuel()), skin);
 
-        fuelLabel = new Label("Fuel: " + Integer.toString(rocket.getFuel()), headingStyle);
-
-        //Independant Window
+        //Independent Window
         final Window pause = new Window("Pause", skin); // TODO
         TextButton continueButton = new TextButton("Continue", skin);
         continueButton.addListener(new ClickListener()
@@ -221,7 +220,7 @@ public class Play implements Screen {
         });
 
         //Score
-        scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth(), 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), headingStyle);
+        scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth(), 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), skin);
 
         table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20);
         table.add(pauseButton).top().right().padTop(5).padLeft(20).padRight(20).width(100).height(100);

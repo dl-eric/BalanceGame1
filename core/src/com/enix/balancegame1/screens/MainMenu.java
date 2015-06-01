@@ -28,7 +28,6 @@ public class MainMenu implements Screen {
     private TextureAtlas atlas;
     private Skin skin;
     private Table table;
-    private BitmapFont white;
 
     @Override
     public void render(float delta)
