@@ -73,8 +73,6 @@ public class Play implements Screen {
     private Skin skin;
     private TextureAtlas atlas;
 
-    private Vector3 bottomLeft, bottomRight;
-
     @Override
     public void render(float delta)
     {
