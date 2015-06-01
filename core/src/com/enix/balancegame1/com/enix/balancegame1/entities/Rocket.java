@@ -48,7 +48,7 @@ public class Rocket extends InputAdapter implements ContactListener
         //Fixture Definition
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 10f + fuel / 10;
+        fixtureDef.density = 15f + fuel / 10;
         fixtureDef.friction = 0.25f;
         fixtureDef.restitution = 0;
 

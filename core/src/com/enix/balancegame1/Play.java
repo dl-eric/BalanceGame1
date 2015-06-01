@@ -1,14 +1,12 @@
 package com.enix.balancegame1;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -20,8 +18,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -38,6 +36,8 @@ import com.enix.balancegame1.com.enix.balancegame1.entities.Rocket;
 
 /**
  * Created by Eric on 5/26/2015.
+ *
+ * TODO: Clouds, Pause Window, High Score, Textures
  */
 public class Play implements Screen {
 
@@ -50,28 +50,30 @@ public class Play implements Screen {
     private final int VELOCITYITERATIONS = 8;
     private final int POSITIONITERATION = 3;
 
-    private BitmapFont white;
     private Label fuelLabel;
     private Label scoreLabel;
 
-    private Body body;
     private Rocket rocket;
     private int score;
 
     private MeterGenerator meterGenerator;
+    private CloudGenerator cloudGenerator;
 
     private Array<Body> temporaryBodies = new Array<Body>();
 
     private Stage stage;
+    private Body body;
 
     private Table table;
     private Skin skin;
     private TextureAtlas atlas;
 
+    private Vector3 bottomLeft, bottomRight;
+
     @Override
     public void render(float delta)
     {
-        Gdx.gl.glClearColor(156/255f, 198/255f, 253/255f, 1);
+        Gdx.gl.glClearColor(135/255f, 206/255f, 235/255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         rocket.update();
@@ -95,12 +97,13 @@ public class Play implements Screen {
             }
         //stage.draw();
         fuelLabel.setText("Fuel: " + Integer.toString(rocket.getFuel()));
-        scoreLabel.setText("Distance: " + calculateScore((int) (Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth(), 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y))));
+        scoreLabel.setText("Distance: " + calculateScore((int) (Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth() / 32, 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y))));
         batch.end();
 
         debugRenderer.render(world, camera.combined);
 
         meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);
+        //cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);
     }
 
     public int calculateScore(int distance)
@@ -147,7 +150,7 @@ public class Play implements Screen {
             {
                 if(rocket.getFuel() > 0)
                 {
-                    rocket.getBody().applyLinearImpulse(0, 300, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y, true);
+                    rocket.getBody().applyLinearImpulse(0, 550, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y, true);
                     rocket.setFuel(rocket.getFuel() - 1);
                 }
                return true;
@@ -164,16 +167,37 @@ public class Play implements Screen {
         //Ground
         //Body Definition
         bodyDef.type = BodyType.StaticBody;
-        bodyDef.position.set(0, -5);
+        bodyDef.position.set(0, 2);
+
+        PolygonShape platformShape = new PolygonShape();
+        platformShape.setAsBox(Gdx.graphics.getWidth() / 64 - 5, 1);
+
+        Sprite platformSprite = new Sprite(new Texture(Gdx.files.internal("img/metal.jpg")));
+        platformSprite.setSize(10, 2);
+
+        fixtureDef.shape = platformShape;
+        fixtureDef.friction = 1;
+
+        body = world.createBody(bodyDef);
+        body.createFixture(fixtureDef);
+        body.setUserData(platformSprite);
+
+        platformShape.dispose();
 
         //Ground Shape
-        ChainShape groundShape = new ChainShape();
+        bodyDef.type = BodyType.StaticBody;
+        bodyDef.position.set(0, -2);
+
         Vector3 botLeft = new Vector3(0, 0, 0), botRight = new Vector3(Gdx.graphics.getWidth(), 0, 0);
 
         camera.unproject(botLeft);
         camera.unproject(botRight);
 
-        groundShape.createChain(new float[] {botLeft.x, botLeft.y, botRight.x, botRight.y});
+        PolygonShape groundShape = new PolygonShape();
+        groundShape.setAsBox(Gdx.graphics.getWidth() / 64, 3);
+
+        Sprite groundSprite = new Sprite(new Texture(Gdx.files.internal("img/ground.png")));
+        groundSprite.setSize(Gdx.graphics.getWidth() / 64, 6);
 
         //Fixture Definition
         fixtureDef.shape = groundShape;
@@ -182,6 +206,7 @@ public class Play implements Screen {
 
         body = world.createBody(bodyDef);
         body.createFixture(fixtureDef);
+        body.setUserData(groundSprite);
 
         groundShape.dispose();
 
@@ -220,7 +245,7 @@ public class Play implements Screen {
         });
 
         //Score
-        scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth(), 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), skin);
+        scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth() / 32, 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), skin);
 
         table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20);
         table.add(pauseButton).top().right().padTop(5).padLeft(20).padRight(20).width(100).height(100);
@@ -232,7 +257,8 @@ public class Play implements Screen {
         stage.addActor(pause);
         pause.setVisible(false);
 
-        meterGenerator = new MeterGenerator(body, botLeft.x, botRight.x, 1, 1);
+        meterGenerator = new MeterGenerator(body, 0, Gdx.graphics.getWidth() / 32, 1, 1);
+        cloudGenerator = new CloudGenerator(body, -Gdx.graphics.getWidth() / 32, Gdx.graphics.getWidth() / 32, 4, 8);
     }
 
     @Override
