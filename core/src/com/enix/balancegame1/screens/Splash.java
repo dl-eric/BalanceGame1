@@ -15,7 +15,9 @@ import aurelienribon.tweenengine.TweenManager;
 
 /**
  * Created by Sabine on 5/26/2015.
+ * Help from dermetfan tutorials
  */
+
 public class Splash implements Screen
 {
     private Sprite splash;
