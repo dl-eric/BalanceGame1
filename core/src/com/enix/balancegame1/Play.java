@@ -67,6 +67,7 @@ public class Play implements Screen {
 
     private Stage stage;
     private Body body;
+    private Body body2;
     private Stage stage2;
 
     private Table table;
@@ -98,6 +99,8 @@ public class Play implements Screen {
                 sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
                 sprite.draw(batch);
             }
+
+        //Labels
         fuelLabel.setText("Fuel: " + Integer.toString(rocket.getFuel()));
         scoreLabel.setText("Distance: " + calculateScore((int) (Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth() / 32, 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y))));
 
@@ -249,6 +252,13 @@ public class Play implements Screen {
             }
         });
 
+        //Clouds
+        BodyDef bodyDef2 = new BodyDef();
+        body2 = world.createBody(bodyDef2);
+        cloudGenerator = new CloudGenerator(body2, -Gdx.graphics.getWidth() / 32, Gdx.graphics.getWidth() / 32, 4, 8); // TODO: GET THIS WORKING
+        body2.setUserData(new Texture(Gdx.files.internal("img/cloud1.png"))); //Still not working
+
+
         //Score
         scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth() / 32, 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), skin);
 
@@ -264,7 +274,6 @@ public class Play implements Screen {
         gameOver.setVisible(true);
 
         meterGenerator = new MeterGenerator(body, 0, Gdx.graphics.getWidth() / 32, 1, 1);
-        cloudGenerator = new CloudGenerator(body, -Gdx.graphics.getWidth() / 32, Gdx.graphics.getWidth() / 32, 4, 8); // TODO: GET THIS WORKING
     }
 
     @Override
