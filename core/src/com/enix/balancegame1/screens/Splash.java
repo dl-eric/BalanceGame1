@@ -59,7 +59,7 @@ public class Splash implements Screen
         {
             @Override
             public void onEvent(int type, BaseTween<?> source)
-            {
+            {       //Tween animation
                 ((Game)(Gdx.app.getApplicationListener())).setScreen(new MainMenu());
             }
         }).start(tweenManager);

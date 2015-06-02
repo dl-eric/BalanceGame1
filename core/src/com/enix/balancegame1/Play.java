@@ -86,9 +86,9 @@ public class Play implements Screen {
         camera.position.y = rocket.getBody().getPosition().y + 4;
         camera.update();
 
-        stage.draw();
+        stage.draw();                                  //Begin Draw
         batch.setProjectionMatrix(camera.combined);
-        batch.begin();
+        batch.begin();                                 //Batch begin
         world.getBodies(temporaryBodies);
         for(Body body : temporaryBodies)
             if(body.getUserData() != null && body.getUserData() instanceof Sprite)
@@ -104,12 +104,12 @@ public class Play implements Screen {
         if(rocket.getFuel() == 0 && rocket.getBody().getLinearVelocity().y == 0)
             stage2.draw();
 
-        batch.end();
+        batch.end();                                    //Batch end
 
         debugRenderer.render(world, camera.combined);
 
-        meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);
-        cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);
+        meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Meters
+        cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Clouds
     }
 
     public int calculateScore(int distance)
@@ -150,6 +150,7 @@ public class Play implements Screen {
 
         world.setContactListener(rocket);
 
+        //Rocket Click Listener
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter()
         {
             @Override
@@ -244,13 +245,14 @@ public class Play implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 gameOver.setVisible(true);
                 Gdx.app.exit();
-                //(Gdx.app.getApplicationListener()).pause();
+                //(Gdx.app.getApplicationListener()).pause();  //Commented out because not working
             }
         });
 
         //Score
         scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth() / 32, 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), skin);
 
+        //Putting everything into table format
         table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20);
         table.add(pauseButton).top().right().padTop(5).padLeft(20).padRight(20).width(100).height(100);
         table.row();
@@ -262,7 +264,7 @@ public class Play implements Screen {
         gameOver.setVisible(true);
 
         meterGenerator = new MeterGenerator(body, 0, Gdx.graphics.getWidth() / 32, 1, 1);
-        cloudGenerator = new CloudGenerator(body, -Gdx.graphics.getWidth() / 32, Gdx.graphics.getWidth() / 32, 4, 8);
+        cloudGenerator = new CloudGenerator(body, -Gdx.graphics.getWidth() / 32, Gdx.graphics.getWidth() / 32, 4, 8); // TODO: GET THIS WORKING
     }
 
     @Override

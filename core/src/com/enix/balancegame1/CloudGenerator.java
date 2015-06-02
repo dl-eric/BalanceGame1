@@ -36,11 +36,13 @@ public class CloudGenerator
 
         PolygonShape cloudShape = new PolygonShape();
         cloudShape.setAsBox(2, 1.3f, new Vector2(x + 4 / 2, y + 4 / 2), 0);
-        cloudSprite = new Sprite(new Texture(Gdx.files.internal("img/cloud1.png")));
+        Texture cloudTexture = new Texture(Gdx.files.internal("img/cloud1.png"));
+        cloudSprite = new Sprite(cloudTexture);
         cloudSprite.setSize(2, 1);
 
+
         environment.createFixture(cloudShape, 0);
-        //environment.setUserData(cloudSprite);
+        //environment.setUserData(cloudSprite);       //Commented out because it produces a bug that replaces Ground texture as cloud texture
 
         cloudShape.dispose();
     }
