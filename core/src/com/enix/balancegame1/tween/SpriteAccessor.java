@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 /**
  * Created by Sabine on 5/26/2015.
- * Help from dermetfan tutorials
+ * Help from dermetfan tutorial
  */
 public class SpriteAccessor implements TweenAccessor<Sprite>
 {
