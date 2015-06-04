@@ -42,6 +42,8 @@ import com.enix.balancegame1.com.enix.balancegame1.entities.Rocket;
  *
  * TODO: Tower texture, make it so that the player never clears the generated tower. ALSO Space gradient as user gets higher and higher
  *
+ * TODO: GAME STATES
+ *
  */
 public class Play implements Screen {
 

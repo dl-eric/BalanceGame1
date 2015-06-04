@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 /**
@@ -37,16 +36,11 @@ public class CloudGenerator
 
         PolygonShape cloudShape = new PolygonShape();
         cloudShape.setAsBox(2, 1.3f, new Vector2(x + 4 / 2, y + 4 / 2), 0);
-        Texture cloudTexture = new Texture(Gdx.files.internal("img/cloud1.png"));
-        cloudSprite = new Sprite(cloudTexture);
+        cloudSprite = new Sprite(new Texture(Gdx.files.internal("img/cloud1.png")));
         cloudSprite.setSize(2, 1);
 
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = cloudShape;
-        fixtureDef.isSensor = true;
-
-        environment.createFixture(fixtureDef);
-        environment.setUserData(cloudSprite);       //Commented out because it produces a bug that replaces Ground texture as cloud texture
+        environment.createFixture(cloudShape, 0);
+        //environment.setUserData(cloudSprite);
 
         cloudShape.dispose();
     }
