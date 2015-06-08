@@ -76,45 +76,77 @@ public class Play implements Screen {
     private Skin skin;
     private TextureAtlas atlas;
 
+    private Button pauseButton;
+
+    private State state = State.RUN;
+
+    public enum State
+    {
+        PAUSE,
+        RUN,
+        RESUME
+    }
+
+    public void setGameState(State s)
+    {
+        this.state = s;
+    }
+
     @Override
     public void render(float delta)
     {
         Gdx.gl.glClearColor(135/255f, 206/255f, 235/255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        rocket.update();
-        world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATION);
+        switch(state) {
+            case RUN: {
+                rocket.update();
+                world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATION);
 
-        camera.position.x = rocket.getBody().getPosition().x > camera.position.x ? rocket.getBody().getPosition().x : camera.position.x;
-        camera.position.y = rocket.getBody().getPosition().y + 4;
-        camera.update();
+                camera.position.x = rocket.getBody().getPosition().x > camera.position.x ? rocket.getBody().getPosition().x : camera.position.x;
+                camera.position.y = rocket.getBody().getPosition().y + 4;
+                camera.update();
 
-        stage.draw();                                  //Begin Draw
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();                                 //Batch begin
-        world.getBodies(temporaryBodies);
-        for(Body body : temporaryBodies)
-            if(body.getUserData() != null && body.getUserData() instanceof Sprite)
-            {
-                Sprite sprite = (Sprite) body.getUserData();
-                sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2);
-                sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
-                sprite.draw(batch);
+                stage.draw();                                  //Begin Draw
+                batch.setProjectionMatrix(camera.combined);
+                batch.begin();                                 //Batch begin
+                world.getBodies(temporaryBodies);
+                for (Body body : temporaryBodies)
+                    if (body.getUserData() != null && body.getUserData() instanceof Sprite) {
+                        Sprite sprite = (Sprite) body.getUserData();
+                        sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2);
+                        sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+                        sprite.draw(batch);
+                    }
+
+                //Labels
+                fuelLabel.setText("Fuel: " + Integer.toString(rocket.getFuel()));
+                scoreLabel.setText("Distance: " + calculateScore((int) (Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth() / 32, 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y))));
+
+                if (rocket.getFuel() == 0 && rocket.getBody().getLinearVelocity().y < 1) {
+                    Gdx.input.setInputProcessor(stage2);
+                    stage2.draw();
+                }
+
+                batch.end();                                    //Batch end
+
+                debugRenderer.render(world, camera.combined);
+
+                meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Meters
+                cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Clouds
+                break;
             }
-
-        //Labels
-        fuelLabel.setText("Fuel: " + Integer.toString(rocket.getFuel()));
-        scoreLabel.setText("Distance: " + calculateScore((int) (Intersector.distanceLinePoint(0, 7, Gdx.graphics.getWidth() / 32, 7, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y))));
-
-        if(rocket.getFuel() == 0 && rocket.getBody().getLinearVelocity().y == 0)
-            stage2.draw();
-
-        batch.end();                                    //Batch end
-
-        debugRenderer.render(world, camera.combined);
-
-        meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Meters
-        cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Clouds
+            case PAUSE:
+                batch.begin();
+                Gdx.input.setInputProcessor(stage2);
+                stage2.draw();
+                batch.end();
+                break;
+            case RESUME:
+                break;
+            default:
+                break;
+        }
     }
 
     public int calculateScore(int distance)
@@ -156,7 +188,8 @@ public class Play implements Screen {
         world.setContactListener(rocket);
 
         //Rocket Click Listener
-        Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter()
+
+        InputMultiplexer inputMultiplexer = new InputMultiplexer(stage, new InputAdapter()
         {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button)
@@ -168,7 +201,7 @@ public class Play implements Screen {
                 }
                return true;
             }
-        }, rocket));
+        });
 
         atlas = new TextureAtlas("ui/button.pack");
         skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), atlas);
@@ -242,15 +275,14 @@ public class Play implements Screen {
         gameOver.setSize(stage.getWidth() / 2, stage.getHeight() / 4);
         gameOver.setPosition(stage.getWidth() / 2 - gameOver.getWidth() / 2, stage.getHeight() / 2 - gameOver.getHeight() / 2);
 
-        Button pauseButton = new Button(skin);
+        pauseButton = new Button(skin);
         pauseButton.pad(10);
         pauseButton.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 gameOver.setVisible(true);
-                Gdx.app.exit();
-                //(Gdx.app.getApplicationListener()).pause();  //Commented out because not working
+                setGameState(State.PAUSE);
             }
         });
 
@@ -258,12 +290,11 @@ public class Play implements Screen {
         BodyDef bodyDef2 = new BodyDef();
         body2 = world.createBody(bodyDef2);
         cloudGenerator = new CloudGenerator(body2, -Gdx.graphics.getWidth() / 32, Gdx.graphics.getWidth() / 32, 4, 8); // TODO: GET THIS WORKING
-        body2.setUserData(new Texture(Gdx.files.internal("img/cloud1.png"))); //Still not working
-
 
         //Score
         scoreLabel = new Label("Distance: " + (int)(Intersector.distanceLinePoint(0, 0, Gdx.graphics.getWidth() / 32, 0, rocket.getBody().getWorldCenter().x, rocket.getBody().getWorldCenter().y)), skin);
 
+        Gdx.input.setInputProcessor(inputMultiplexer);
         //Putting everything into table format
         table.add(fuelLabel).top().left().padTop(5).padLeft(20).padRight(20);
         table.add(pauseButton).top().right().padTop(5).padLeft(20).padRight(20).width(100).height(100);
@@ -287,13 +318,13 @@ public class Play implements Screen {
     @Override
     public void pause()
     {
-
+        this.state = State.PAUSE;
     }
 
     @Override
     public void resume()
     {
-
+        this.state = State.RUN;
     }
 
     @Override
