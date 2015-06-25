@@ -128,12 +128,12 @@ public class Play implements Screen {
                     stage2.draw();
                 }
 
+                cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Clouds
                 batch.end();                                    //Batch end
 
                 debugRenderer.render(world, camera.combined);
 
                 meterGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Meters
-                cloudGenerator.generate(camera.position.y + camera.viewportHeight / 2);     //Generate Clouds
                 break;
             }
             case PAUSE:
